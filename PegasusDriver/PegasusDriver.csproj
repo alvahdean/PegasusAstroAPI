@@ -1,7 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Authors>Dean Fuqua</Authors>
+    <Description>Driver for PegasusAstro controller</Description>
+    <RepositoryUrl>https://github.com/alvahdean/PegasusAstroAPI</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageProjectUrl>https://github.com/alvahdean/PegasusAstroAPI</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

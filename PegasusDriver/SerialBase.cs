@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PegasusDriver
 {
+    [UnsupportedOSPlatform("android")]
+    [UnsupportedOSPlatform("ios")]
     public abstract class SerialBase : IDisposable
     {
         protected SerialPort _connection;
@@ -39,12 +42,14 @@ namespace PegasusDriver
 
             _connection = new SerialPort(CommPort, BaudRate, Parity, DataBits, StopBits);
             _connection.Open();
+            OnConnect();
         }
 
         public void Disconnect()
         {
             if (IsConnected)
             {
+                OnDisconnect();
                 _connection.Close();
                 _connection.Dispose();
                 _connection = null;
