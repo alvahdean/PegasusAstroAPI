@@ -40,6 +40,11 @@ namespace PegasusDriver
         {
             Disconnect();
 
+            if(!GetPorts().Contains(CommPort))
+            {
+                return;
+            }
+
             _connection = new SerialPort(CommPort, BaudRate, Parity, DataBits, StopBits);
             _connection.Open();
             OnConnect();

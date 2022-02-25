@@ -13,11 +13,6 @@ namespace PegasusTest
         {
             var device = new PocketPowerBoxDriver();
 
-            //Console.WriteLine("Scanning COM Ports...");
-            //foreach(var portNportame in portNames)
-            //{
-            //    Console.WriteLine($"\t[{portName}]");
-            //}
             string portName;
 
             if (args.Count() > 0)

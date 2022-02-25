@@ -23,7 +23,7 @@ namespace PegasusDriver
             Parity = System.IO.Ports.Parity.None;
             BaudRate = 9600;
             CommPort = null;
-            UpdateInterval = TimeSpan.FromSeconds(5);
+            UpdateInterval = TimeSpan.Zero;
         }
 
         public PocketPowerBoxState State { get; }
@@ -59,24 +59,33 @@ namespace PegasusDriver
             }
         }
 
+        protected void ClearState()
+        {
+            State.Voltage = double.NaN;
+            State.Current = double.NaN;
+            State.Temperature = double.NaN;
+            State.Humidity = double.NaN;
+            State.DewPoint = double.NaN;
+            State.QuadPortEnabled = false;
+            State.DslrEnabled = false;
+            State.DewHeaterPowerA = -1;
+            State.DewHeaterPowerB = -1;
+            State.AutoDewEnabled = false;
+            State.Error = null;
+        }
 
         protected override void OnConnect()
         {
-            bool wasSuccessful;
             Console.WriteLine("Initializing connection");
             State.IsConnected = IsConnected;
             State.CommPort = CommPort;
 
             EnsureConnected();
-            Console.WriteLine("Setting boot power state to on for all 12V outputs");
-            var response = SendCommand($"P1000");
-            wasSuccessful = response == "PPB_OK";
-
-            if (!wasSuccessful)
+            if(!Ping())
             {
-                Console.WriteLine($"Failed to set boot power state. Response={response}");
-                Console.WriteLine($"Disconnecting");
+                State.Error = $"Device does not seem to be a Pocket Power Box";
                 Disconnect();
+
                 return;
             }
 
@@ -87,6 +96,7 @@ namespace PegasusDriver
         protected override void OnDisconnect()
         {
             State.IsConnected = false;
+            ClearState();
             Console.WriteLine($"Disconnecting");
         }
         
@@ -101,37 +111,49 @@ namespace PegasusDriver
             }
             catch(Exception ex)
             {
-                State.Error = ex;
+                State.Error = ex.Message;
             }
 
             return false;
         }
- 
-        public void UpdateStatus()
-        { 
-                //Receive: PPB:12.2:0.5.22.2:45:17.2:1:1:120:130:1
-                //             Volt  :Amp:Temp:Hum:DPt :Pwr :DSLR :Dew1:Dew2:AutoDew
-                //Receive: PPB:12.2:0.5  :22.2:45 :17.2:1   :1    :120 :130 :1
-                var response = SendCommand($"PA");
-                Console.WriteLine($"Status: {response}");
 
-                var values = response.Split(':');
-                State.Voltage = double.Parse(values[0]);
-                State.Current = double.Parse(values[1]);
-                State.Temperature = double.Parse(values[2]);
-                State.Humidity = double.Parse(values[3]);
-                State.DewPoint = double.Parse(values[4]);
-                State.QuadPortEnabled = bool.Parse(values[5]);
-                State.DslrEnabled = bool.Parse(values[6]);
-                State.DewHeaterPowerA = Math.Round(int.Parse(values[7]) / 255d, 1);
-                State.DewHeaterPowerB = Math.Round(int.Parse(values[8]) / 255d, 1);
-                State.AutoDewEnabled = bool.Parse(values[9]);
-                State.LastUpdate = DateTime.Now;
+        public void UpdateStatus()
+        {
+            if(!IsConnected)
+            {
+                return;
+            }
+
+            var response = SendCommand($"PA");
+            Console.WriteLine($"Status: {response}");
+
+            State.LastUpdate = DateTime.Now;
+            ClearState();
+            
+            var values = response.Split(':').ToList();
+
+            if (values.Count !=12 || values[0] !="PPB")
+            {
+                State.Error = $"Status query failed: {response}";
+            }
+
+            int i = 1;
+
+            State.Voltage = double.Parse(values[i++]);
+            State.Current = Math.Round(double.Parse(values[i++])/65d,1);
+            State.Temperature = double.Parse(values[i++]);
+            State.Humidity = double.Parse(values[i++]);
+            State.DewPoint = double.Parse(values[i++]);
+            State.QuadPortEnabled = values[i++]=="1";
+            State.DslrEnabled = values[i++] == "1";
+            State.DewHeaterPowerA = Math.Round(int.Parse(values[i++]) / 255d, 1);
+            State.DewHeaterPowerB = Math.Round(int.Parse(values[i++]) / 255d, 1);
+            State.AutoDewEnabled = values[i++] == "1";
         }
 
         public void Reboot()
         {
-            State.Error = null;
+            ClearState();
             Console.WriteLine("Rebooting...");
             SendNullCommand($"PF");
         }

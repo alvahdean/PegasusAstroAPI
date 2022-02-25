@@ -23,6 +23,6 @@ namespace PegasusDriver
         public bool IndicatorLedOn { get;  set; }
         public string FirmwareVersion { get; set; }
         public DateTime LastUpdate { get; set; }
-        public Exception Error { get; set; }
+        public string Error { get; set; }
     }
 }
