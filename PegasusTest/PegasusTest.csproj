@@ -5,8 +5,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <Import Project="..\Pegasus.Driver.Shared\Pegasus.Driver.Shared.projitems" Label="Shared" />
+
   <ItemGroup>
-    <ProjectReference Include="..\PegasusDriver\PegasusDriver.csproj" />
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
