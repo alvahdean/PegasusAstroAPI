@@ -1,7 +1,12 @@
-﻿using System;
+﻿
+using System;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Runtime.Versioning;
+
+#if BUIID_FOR_ESP32
+using nanoFramework.Hardware.Esp32;
+#endif
 
 namespace Pegasus.Driver
 {
@@ -16,6 +21,16 @@ namespace Pegasus.Driver
             StopBits = StopBits.One;
             Parity = Parity.None;
             DataBits = 8;
+
+#if BUIID_FOR_ESP32
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+            // COM2 in ESP32-WROVER-KIT mapped to free GPIO pins
+            // mind to NOT USE pins shared with other devices, like serial flash and PSRAM
+            // also it's MANDATORY to set pin function to the appropriate COM before instantiating it
+
+            Configuration.SetPinFunction(32, DeviceFunction.COM2_RX);
+            Configuration.SetPinFunction(33, DeviceFunction.COM2_TX);
+#endif
         }
 
         public bool IsConnected => _connection!=null && _connection.IsOpen;
@@ -36,7 +51,17 @@ namespace Pegasus.Driver
             Disconnect();
 
             Debug.WriteLine($"CONNECT: {CommPort}");
-            _connection = new SerialPort(CommPort, BaudRate, Parity, DataBits, StopBits);
+            Debug.WriteLine($"\tBaudRate: {BaudRate}");
+            Debug.WriteLine($"\tParity: {Parity}");
+            Debug.WriteLine($"\tDataBits: {DataBits}");
+            Debug.WriteLine($"\tStopBits: {StopBits}");
+
+            _connection = new SerialPort(CommPort);
+            _connection.BaudRate= BaudRate;
+            _connection.Parity= Parity;
+            _connection.DataBits= DataBits;
+            _connection.StopBits= StopBits;
+
             _connection.Open();
             OnConnect();
         }
