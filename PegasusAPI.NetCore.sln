@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PegasusTest", "PegasusTest\
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Pegasus.Driver.Shared", "Pegasus.Driver.Shared\Pegasus.Driver.Shared.shproj", "{C84DAE9D-2F1B-49AD-850A-935D665EB07E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pegasus.API.NetCore", "Pegasus.API.NetCore\Pegasus.API.NetCore.csproj", "{CE9DFBAA-7F49-454E-874D-54EB33E9B584}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pegasus.Api.NetCore", "Pegasus.API.NetCore\Pegasus.Api.NetCore.csproj", "{CE9DFBAA-7F49-454E-874D-54EB33E9B584}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
