@@ -20,6 +20,7 @@ using System.Security.Cryptography.X509Certificates;
 using nanoFramework.WebServer;
 using Iot.Device.Ssd13xx;
 using System.Device.I2c;
+using Pegasus_API.NanoFramework;
 
 #if HAS_WIFI
 using System.Device.WiFi;

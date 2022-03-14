@@ -7,6 +7,8 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Pegasus,API.NanoFramework",
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Pegasus.Driver.Shared", "Pegasus.Driver.Shared\Pegasus.Driver.Shared.shproj", "{C84DAE9D-2F1B-49AD-850A-935D665EB07E}"
 EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "nanoFramework.WebServer", "..\..\contrib\nanoFramework\nanoFramework.WebServer\nanoFramework.WebServer\nanoFramework.WebServer.nfproj", "{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Pegasus.Driver.Shared\Pegasus.Driver.Shared.projitems*{c84dae9d-2f1b-49ad-850a-935d665eb07e}*SharedItemsImports = 13
@@ -22,6 +24,12 @@ Global
 		{F9735CF8-36FA-4286-A7D9-966CE1B336EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9735CF8-36FA-4286-A7D9-966CE1B336EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9735CF8-36FA-4286-A7D9-966CE1B336EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87AAA5FE-CBB6-497F-97B7-7AF21B9A0C4E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

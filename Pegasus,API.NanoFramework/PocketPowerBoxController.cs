@@ -7,11 +7,11 @@ namespace Pegasus.API
 {
     public class PocketPowerBoxController
     {
-        private readonly static PocketPowerBoxDriver _pocketPowerBoxDriver;
+        private readonly static PocketPowerBoxDriver _driver;
 
         static PocketPowerBoxController()
         {
-            _pocketPowerBoxDriver = new PocketPowerBoxDriver();
+            _driver = new PocketPowerBoxDriver();
         }
 
         [Route("state")]
@@ -21,51 +21,81 @@ namespace Pegasus.API
             ReturnState(e);
         }
 
-        [Method("POST")]
+        [Route("ports")]
+        [Method("GET")]
+        public void GetPorts(WebServerEventArgs e)
+        {
+            var portList = _driver.GetPorts();
+            var jsonResult = JsonConvert.SerializeObject(portList);
+            e.Context.Response.ContentType = "application/json";
+
+            WebServer.OutPutStream(e.Context.Response, jsonResult);
+        }
+
+        //[Method("POST")]
         [Route("connect")]
         public void Connect(WebServerEventArgs e)
         {
-            var port = GetArg(e, 0);
-
-            if (string.IsNullOrEmpty(port))
+            try
             {
-                _pocketPowerBoxDriver.Connect();
-            }
-            else
-            {
-                _pocketPowerBoxDriver.Connect(port);
-            }
+                var port = GetArg(e, 1);
 
-            ReturnState(e);
+                if (string.IsNullOrEmpty(port))
+                {
+                    _driver.Connect();
+                }
+                else
+                {
+                    _driver.Connect(port);
+                }
+
+                ReturnState(e);
+            }
+            catch(Exception ex)
+            {
+                ReturnError(e,ex);
+            }
         }
 
         [Method("POST")]
         [Route("disconnect")]
         public void Disconnect(WebServerEventArgs e)
         {
-            _pocketPowerBoxDriver.Disconnect();
-
-            ReturnState(e);
+            try
+            {
+                _driver.Disconnect();
+                ReturnState(e);
+            }
+            catch (Exception ex)
+            {
+                ReturnError(e, ex);
+            }
         }
 
         [Method("POST")]
         [Route("led")]
         public void Led(WebServerEventArgs e)
         {
-            var state = GetBoolArg(e, 0);
+            try
+            {
+                var state = GetBoolArg(e, 1);
 
-            _pocketPowerBoxDriver.SetIndicatorLed(state);
-
-            ReturnState(e);
+                _driver.SetIndicatorLed(state);
+                ReturnState(e);
+            }
+            catch (Exception ex)
+            {
+                ReturnError(e, ex);
+            }
         }
 
         [Method("POST")]
         [Route("dslr")]
         public void Dslr(WebServerEventArgs e)
         {
-            var state = GetBoolArg(e, 0);
+            var state = GetBoolArg(e, 1);
 
-            _pocketPowerBoxDriver.SetDslrState(state);
+            _driver.SetDslrState(state);
 
             ReturnState(e);
         }
@@ -74,9 +104,9 @@ namespace Pegasus.API
         [Route("power")]
         public void PowerOutput(WebServerEventArgs e)
         {
-            var state = GetBoolArg(e, 0);
+            var state = GetBoolArg(e, 1);
 
-            _pocketPowerBoxDriver.SetPowerState(state);
+            _driver.SetPowerState(state);
 
             ReturnState(e);
         }
@@ -85,9 +115,9 @@ namespace Pegasus.API
         [Route("autodew")]
         public void AutoDew(WebServerEventArgs e)
         {
-            var state = GetBoolArg(e, 0);
+            var state = GetBoolArg(e, 1);
 
-            _pocketPowerBoxDriver.SetAutoDew(state);
+            _driver.SetAutoDew(state);
 
             ReturnState(e);
         }
@@ -96,9 +126,9 @@ namespace Pegasus.API
         [Route("dewa")]
         public void DewA(WebServerEventArgs e)
         {
-            var pct = GetDoubleArg(e, 0);
+            var pct = GetDoubleArg(e, 1);
 
-            _pocketPowerBoxDriver.SetDewA(pct);
+            _driver.SetDewA(pct);
 
             ReturnState(e);
         }
@@ -107,9 +137,9 @@ namespace Pegasus.API
         [Route("dewb")]
         public void DewB(WebServerEventArgs e)
         {
-            var pct = GetDoubleArg(e, 0);
+            var pct = GetDoubleArg(e, 1);
 
-            _pocketPowerBoxDriver.SetDewB(pct);
+            _driver.SetDewB(pct);
 
             ReturnState(e);
         }
@@ -205,9 +235,31 @@ namespace Pegasus.API
             return result;
         }
 
+        private void ClearError()
+        {
+            SetError(string.Empty);
+        }
+
+        private void SetError(string message)
+        {
+            _driver.State.Error = message;
+        }
+
+        private void ReturnError(WebServerEventArgs e, Exception ex)
+        {
+            SetError(ex.Message);
+            var state = _driver.State;
+
+            var jsonResult = JsonConvert.SerializeObject(state);
+            e.Context.Response.ContentType = "application/json";
+            e.Context.Response.StatusCode = 500;
+
+            WebServer.OutPutStream(e.Context.Response, jsonResult);
+        }
+
         private void ReturnState(WebServerEventArgs e)
         {
-            var state = _pocketPowerBoxDriver.State;
+            var state = _driver.State;
 
             var jsonResult = JsonConvert.SerializeObject(state);
             e.Context.Response.ContentType = "application/json";
